@@ -3,7 +3,7 @@
 
 
 typedef struct sync_st {
-	pthread_barrier_t barrier; 	
+	pthread_barrier_t barrier;
 	bool escape_pressed;
 } sync_t;
 
@@ -24,8 +24,6 @@ typedef struct worker_st {
 	int workers_nb;
 	int id;
 	sync_t* synchronization;
-	//ajouter la déclaration de la sémaphore de synchronisation entre les workers et le thread d'affichage
-	//ce sémaphore sera initialisé avec le nombre de workers
 } worker_t;
 
 void init_matrix(square_t** matrix);
