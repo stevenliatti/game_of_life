@@ -13,7 +13,7 @@
 
 void update_square(square_t* square);
 void update_neighbours(square_t** matrix, int x, int y);
-void update_board(square_t** matrix, int x, int y);
+void update_board(board_t* board);
 void* work(void* arg);
 
 #endif
