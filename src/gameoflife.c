@@ -1,13 +1,8 @@
 /**
-* @file crack.c
-* @brief A password cracker
+* @file gameoflife.c
+* @brief Game of life
 *
-* This file contains a brute force password
-* cracker multithreaded. The program need a
-* password hash with him salt and a number of
-* threads for the execution. He test all the 
-* combinations from the alphabet declared and
-* the password's max size. 
+*
 *
 * @author Steven Liatti
 * @author Orphée Antoniadis
@@ -50,6 +45,29 @@ typedef struct worker_st {
 /**
  *
  */
+void update_square(square_t* square) {
+	if (square->is_alive_past) {
+		if (square->nb_neighbours < 2 || square->nb_neighbours > 3) {
+			square->is_alive = false;
+		}
+		else if (square->nb_neighbours == 2 || square->nb_neighbours == 3) {
+			square->is_alive = true;
+		}
+	}
+	else {
+		if (square->nb_neighbours == 3) {
+			square->is_alive = true;
+		}
+	}
+
+	// Judicieux de faire ça ici ? Risque de faire chier aux voisins
+	// mieux vaut parcourir toutes les cases après avoir fait update_square et mettre à jour le nombre de voisins
+	//square->is_alive_past = square->is_alive;
+}
+
+/**
+ *
+ */
 void init_matrix() {
 	
 }
@@ -77,11 +95,12 @@ void init_workers(worker_t* workers, int workers_nb, board_t* board) {
 }
 
 /**
- * @param arg a void pointer, in reality the array passwd_st needed
- * @return if the password is found or not
+ * @param arg 
+ * @return 
  */
 void* work(void* arg) {
-	return NULL;
+	worker_t* worker = (worker_t*) arg;
+
 }
 
 /**
