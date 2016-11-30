@@ -29,6 +29,15 @@
 pthread_barrier_t barrier; 
 
 /**
+ * @param arg 
+ * @return 
+ */
+void* work(void* arg) {
+	worker_t* worker = (worker_t*) arg;
+
+}
+
+/**
  * This is the main function. It initialize the variables, launch the threads,
  * print if the solution is not found, free the memory in use and calculate the
  * execution time of the program.
@@ -51,12 +60,7 @@ int main(int argc, char** argv) {
 
 		worker_t workers[workers_nb];
 		board_t board;
-		square_t matrix[width][height];
-
-		init_board(&board, matrix, width, height);
-		init_workers(workers, workers_nb, &board);
-
-
+		workers_init(workers,workers_nb,width,height);
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
@@ -72,6 +76,7 @@ int main(int argc, char** argv) {
 /*		double elapsed = finish.tv_sec - start.tv_sec;*/
 /*		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;*/
 /*		printf("%f\n", elapsed);*/
+		workers_free(workers);
 		return EXIT_SUCCESS;
 	}
 	else {
