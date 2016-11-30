@@ -1,7 +1,6 @@
 #ifndef _WORKERS_MANAGEMENT_H_
 #define _WORKERS_MANAGEMENT_H_
 
-
 typedef struct sync_st {
 	pthread_barrier_t barrier; 	
 	bool escape_pressed;
