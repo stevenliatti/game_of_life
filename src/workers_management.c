@@ -11,10 +11,10 @@
 
 board_t* board_alloc(int width, int height) {
 	board_t* board = malloc(sizeof(board_t));
-	square_t* temp = malloc(width * height * sizeof(square_t));
+	square_t* temp = malloc(sizeof(square_t)*width*height);
 	board->width = width;
 	board->height = height;
-	board->matrix = malloc(width * sizeof(square_t*));
+	board->matrix = malloc(sizeof(square_t*)*width);
 	for (int i = 0; i < width; i++) {
 		board->matrix[i] = temp + height * i;
 	}
@@ -35,15 +35,18 @@ void update_neighbours(square_t** matrix, int x, int y) {
 	}
 }
 
-board_t* board_gen(int width, int height) {
+board_t* board_gen(int width, int height, int prob) {
 	srand(time(NULL));
 	board_t* board = board_alloc(width,height);
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			if (i == 0 || i == width-1 || j == 0 || j == height-1) {
+			if (i == 0 || i == width-1 || j == 0 || j == height-1)
 				board->matrix[i][j].is_alive_past = 0;
-			} else {
-				board->matrix[i][j].is_alive_past = rand() % 2;
+			else {
+				if (rand() % 101 <= prob)
+			 		board->matrix[i][j].is_alive_past = true;
+				else
+					board->matrix[i][j].is_alive_past = false;
 			}
 		}
 	}
@@ -63,8 +66,9 @@ sync_t* sync_init() {
 	return sync;
 }
 
-void workers_init(worker_t* workers, int workers_nb, int width, int height) {
-	board_t* board = board_gen(width,height);
+worker_t* workers_init(int workers_nb,int width,int height,int prob) {
+	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
+	board_t* board = board_gen(width,height,prob);
 	sync_t* sync = sync_init();
 	for(int i = 0; i < workers_nb; i++) {
 		workers[i].board = board;
@@ -72,6 +76,7 @@ void workers_init(worker_t* workers, int workers_nb, int width, int height) {
 		workers[i].workers_nb = workers_nb;
 		workers[i].sync = sync;
 	}
+	return workers;
 }
 
 void workers_free(worker_t* workers) {
@@ -79,6 +84,7 @@ void workers_free(worker_t* workers) {
 		free(workers->board->matrix);
 		free(workers->board);
 		free(workers->sync);
+		free(workers);
 }
 
 void print_board(board_t* board) {
@@ -89,4 +95,3 @@ void print_board(board_t* board) {
 		printf("\n");
 	}
 }
-

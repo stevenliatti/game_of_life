@@ -25,48 +25,27 @@
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
-
-pthread_barrier_t barrier; 
-
-/**
- * @param arg 
- * @return 
- */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
 
 }
 
-/**
- * This is the main function. It initialize the variables, launch the threads,
- * print if the solution is not found, free the memory in use and calculate the
- * execution time of the program.
- *
- * @param argc
- * @param argv
- * @return the code's exit of program
- */
 int main(int argc, char** argv) {
 	if (argc == 7) {
 /*		struct timespec start, finish;*/
 /*		clock_gettime(CLOCK_MONOTONIC, &start);*/
 
-		pthread_barrier_init(&barrier, NULL, 2);
-
-		int workers_nb = atoi(argv[6]);
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
+		int prob = (int)(atof(argv[4])*100);
+		int workers_nb = atoi(argv[6]);
 		pthread_t t[workers_nb];
 
-		worker_t workers[workers_nb];
-		board_t board;
-		workers_init(workers,workers_nb,width,height);
+		worker_t workers = workers_init(workers_nb,width,height,prob);
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
 		}
-
-		pthread_barrier_wait(&barrier);
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_join(t[i], NULL), "pthread_join failed!");

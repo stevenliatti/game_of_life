@@ -27,7 +27,7 @@ typedef struct worker_st {
 	sync_t* sync;
 } worker_t;
 
-void workers_init(worker_t* workers, int workers_nb, int width, int height);
+worker_t* workers_init(int workers_nb,int width,int height,int prob);
 void workers_free(worker_t* workers);
 void print_board(board_t* board);
 
