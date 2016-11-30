@@ -26,47 +26,6 @@
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
 /**
- *
- */
-void update_square(square_t* square) {
-	if (square->is_alive_past) {
-		if (square->nb_neighbours < 2 || square->nb_neighbours > 3) {
-			square->is_alive = false;
-		}
-		else if (square->nb_neighbours == 2 || square->nb_neighbours == 3) {
-			square->is_alive = true;
-		}
-	}
-	else {
-		if (square->nb_neighbours == 3) {
-			square->is_alive = true;
-		}
-	}
-
-	// Judicieux de faire ça ici ? Risque de faire chier aux voisins
-	// mieux vaut parcourir toutes les cases après avoir fait update_square et mettre à jour le nombre de voisins
-	//square->is_alive_past = square->is_alive;
-}
-
-/**
- *
- */
-void update_neighbours(square_t** matrix, int x, int y) {
-	matrix[x][y].nb_neighbours = 0;
-	for (int i = x - 1; i <= x + 1; i++) {
-		for (int j = y - 1; j <= y + 1; j++) {
-			if (matrix[i][j].is_alive) {
-				matrix[x][y].nb_neighbours++;
-			}
-		}
-	}
-	// This condition is for exlcude the square considered.
-	if (matrix[x][y].is_alive) {
-		matrix[x][y].nb_neighbours--;
-	}
-}
-
-/**
  * @param arg 
  * @return 
  */
@@ -98,12 +57,7 @@ int main(int argc, char** argv) {
 
 		worker_t workers[workers_nb];
 		board_t board;
-		square_t matrix[width][height];
-
-		init_board(&board, matrix, width, height);
-		init_workers(workers, workers_nb, &board);
-
-
+		workers_init(workers,workers_nb,width,height);
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
@@ -116,6 +70,7 @@ int main(int argc, char** argv) {
 /*		double elapsed = finish.tv_sec - start.tv_sec;*/
 /*		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;*/
 /*		printf("%f\n", elapsed);*/
+		workers_free(workers);
 		return EXIT_SUCCESS;
 	}
 	else {
