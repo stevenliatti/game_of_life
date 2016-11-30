@@ -49,8 +49,26 @@ void update_square(square_t* square) {
 }
 
 /**
- * @param arg
- * @return
+ *
+ */
+void update_neighbours(square_t** matrix, int x, int y) {
+	matrix[x][y].nb_neighbours = 0;
+	for (int i = x - 1; i <= x + 1; i++) {
+		for (int j = y - 1; j <= y + 1; j++) {
+			if (matrix[i][j].is_alive) {
+				matrix[x][y].nb_neighbours++;
+			}
+		}
+	}
+	// This condition is for exlcude the square considered.
+	if (matrix[x][y].is_alive) {
+		matrix[x][y].nb_neighbours--;
+	}
+}
+
+/**
+ * @param arg 
+ * @return 
  */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
