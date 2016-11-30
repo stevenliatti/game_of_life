@@ -40,7 +40,12 @@ typedef struct worker_st {
 	board_t* board;
 	int workers_nb;
 	int id;
+	//ajouter la déclaration de la barrière de synchronisation entre les workers et le thread d'affichage
+	//cette barrière sera initialisée avec le nombre de workers
+	//pthread_barrier_t workers_display_sync; 
 } worker_t;
+
+
 
 /**
  *
@@ -116,6 +121,9 @@ int main(int argc, char** argv) {
 	if (argc == 7) {
 /*		struct timespec start, finish;*/
 /*		clock_gettime(CLOCK_MONOTONIC, &start);*/
+
+
+
 		int workers_nb = atoi(argv[6]);
 		pthread_t t[workers_nb];
 		worker_t workers[workers_nb];
