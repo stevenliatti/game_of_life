@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 /*		struct timespec start, finish;*/
 /*		clock_gettime(CLOCK_MONOTONIC, &start);*/
 
-
+		pthread_barrier_t stop_thread_sync; 
 
 		int workers_nb = atoi(argv[6]);
 		int width = atoi(argv[1]);
