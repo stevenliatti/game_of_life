@@ -98,9 +98,9 @@ int main(int argc, char** argv) {
 
 		worker_t workers[workers_nb];
 		board_t board;
-		square_t matrix[width][heigth];
+		square_t matrix[width][height];
 
-		init_board(&board, matrix, width, heigth);
+		init_board(&board, matrix, width, height);
 		init_workers(workers, workers_nb, &board);
 
 
