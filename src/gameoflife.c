@@ -21,31 +21,9 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
+#include "workers_management.h"
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
-
-typedef struct square_st {
-	bool is_alive;
-	bool is_alive_past;
-	int nb_neighbours;
-} square_t;
-
-typedef struct board_st {
-	square_t** matrix;
-	int width;
-	int height;
-} board_t;
-
-typedef struct worker_st {
-	board_t* board;
-	int workers_nb;
-	int id;
-	//ajouter la déclaration de la barrière de synchronisation entre les workers et le thread d'affichage
-	//cette barrière sera initialisée avec le nombre de workers
-	//pthread_barrier_t workers_display_sync; 
-} worker_t;
-
-
 
 /**
  *
@@ -71,37 +49,8 @@ void update_square(square_t* square) {
 }
 
 /**
- *
- */
-void init_matrix() {
-	
-}
-
-/**
- *
- */
-void init_board(board_t* board, int width, int height) {
-	board->width = width;
-	board->height = height;
-	
-	board->matrix[width][height];
-	init_matrix(board->matrix);
-}
-
-/**
- *
- */
-void init_workers(worker_t* workers, int workers_nb, board_t* board) {
-	for(int i = 0; i < workers_nb; i++) {
-		workers[i].board = board;
-		workers[i].id = i;
-		workers[i].workers_nb = workers_nb;
-	}
-}
-
-/**
- * @param arg 
- * @return 
+ * @param arg
+ * @return
  */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
@@ -110,10 +59,10 @@ void* work(void* arg) {
 
 /**
  * This is the main function. It initialize the variables, launch the threads,
- * print if the solution is not found, free the memory in use and calculate the 
+ * print if the solution is not found, free the memory in use and calculate the
  * execution time of the program.
  *
- * @param argc 
+ * @param argc
  * @param argv
  * @return the code's exit of program
  */
@@ -125,15 +74,18 @@ int main(int argc, char** argv) {
 
 
 		int workers_nb = atoi(argv[6]);
+		int width = atoi(argv[1]);
+		int height = atoi(argv[2]);
 		pthread_t t[workers_nb];
+
 		worker_t workers[workers_nb];
-
 		board_t board;
-		init_board(&board, atoi(argv[1]), atoi(argv[2]));
+		square_t matrix[width][heigth];
 
+		init_board(&board, matrix, width, heigth);
 		init_workers(workers, workers_nb, &board);
 
-		
+
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
