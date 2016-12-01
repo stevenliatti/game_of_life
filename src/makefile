@@ -18,8 +18,6 @@ workers_management.o: workers_management.c
 workers_compute.o: workers_compute.c
 	$(GCC) $< -c
 
-
-
 run: gameoflife
 	./$<
 

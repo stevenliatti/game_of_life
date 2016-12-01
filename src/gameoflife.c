@@ -2,8 +2,6 @@
 * @file gameoflife.c
 * @brief Game of life
 *
-*
-*
 * @author Steven Liatti
 * @author Orphée Antoniadis
 * @author Raed Abdennadher
@@ -14,6 +12,7 @@
 
 #include "workers_management.h"
 #include "workers_compute.h"
+#include "gfx.h"
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
