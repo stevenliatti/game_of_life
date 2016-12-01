@@ -1,16 +1,17 @@
 GCC=gcc -g -Wall -Wextra -std=gnu99
 LIBS=-lSDL2 -lpthread
 
-all: test
-
-test: test.o
+gfx_example: gfx_example.o gfx.o
 	$(GCC) $^ -o $@ $(LIBS)
 
-test.o: test.c
+gfx_example.o: gfx_example.c gfx.h
 	$(GCC) $< -c
 
-run: test
+gfx.o: gfx.c gfx.h
+	$(GCC) $< -c
+
+run: gfx_example
 	./$<
 
 clean:
-	rm -f *.o test *~
+	rm -f *.o gfx_example
