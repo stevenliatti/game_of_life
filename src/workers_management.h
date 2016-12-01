@@ -2,11 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <time.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <string.h>
+#include <time.h>
+#include <stdbool.h>
+#include "gfx.h"
 
 #ifndef _WORKERS_MANAGEMENT_H_
 #define _WORKERS_MANAGEMENT_H_
