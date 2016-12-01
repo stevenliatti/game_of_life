@@ -1,8 +1,6 @@
+#include "workers_management.h"
 #include "workers_compute.h"
 
-/**
- *
- */
 void update_square(square_t* square) {
 	if (square->is_alive_past) {
 		if (square->nb_neighbours < 2 || square->nb_neighbours > 3) {
@@ -17,15 +15,8 @@ void update_square(square_t* square) {
 			square->is_alive = true;
 		}
 	}
-
-	// Judicieux de faire ça ici ? Risque de faire chier aux voisins
-	// mieux vaut parcourir toutes les cases après avoir fait update_square et mettre à jour le nombre de voisins
-	//square->is_alive_past = square->is_alive;
 }
 
-/**
- *
- */
 void update_board(board_t* board) {
 	for (int i = 1; i < board->width - 1; i++) {
 		for (int j = 1; j < board->height - 1; j++) {
@@ -35,10 +26,6 @@ void update_board(board_t* board) {
 	}
 }
 
-/**
- * @param arg
- * @return
- */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
 	int squares_nb = worker->board->width * worker->board->height;

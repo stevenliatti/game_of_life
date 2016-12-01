@@ -2,8 +2,6 @@
 * @file gameoflife.c
 * @brief Game of life
 *
-*
-*
 * @author Steven Liatti
 * @author Orphée Antoniadis
 * @author Raed Abdennadher
