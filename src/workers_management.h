@@ -13,9 +13,9 @@
 #define _WORKERS_MANAGEMENT_H_
 
 typedef struct sync_st {
-	pthread_barrier_t escape_barrier;
+	sem_t sem_escape;
 	pthread_barrier_t workers_barrier;
-	sem_t sem_display;
+	sem_t sem_workers;
 	pthread_mutex_t compute_nb_mutex;
 	bool escape_pressed;
 	int compute_nb;

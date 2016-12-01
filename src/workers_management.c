@@ -31,13 +31,19 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 	board_t* board = board_alloc(width,height);
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			if (i == 0 || i == width-1 || j == 0 || j == height-1)
-				board->matrix[i][j].is_alive_past = 0;
+			if (i == 0 || i == width-1 || j == 0 || j == height-1){
+				board->matrix[i][j].is_alive_past = false;
+				board->matrix[i][j].is_alive = false;
+			}
 			else {
-				if (rand() % 101 <= prob)
+				if (rand() % 101 <= prob){
 			 		board->matrix[i][j].is_alive_past = true;
-				else
+			 		board->matrix[i][j].is_alive = true;
+			 	}
+				else{
 					board->matrix[i][j].is_alive_past = false;
+					board->matrix[i][j].is_alive = false;
+				}
 			}
 		}
 	}
@@ -51,9 +57,9 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 
 sync_t* sync_init(int workers_nb) {
 	sync_t* sync = malloc(sizeof(sync_t));
-	pthread_barrier_init(&(sync->escape_barrier),NULL,2);
+	sem_init(&(sync->sem_escape),0,0);
 	pthread_barrier_init(&(sync->workers_barrier),NULL,workers_nb+1);
-	sem_init(&(sync->sem_display),0,0);
+	sem_init(&(sync->sem_workers),0,0);
 	pthread_mutex_init(&(sync->compute_nb_mutex), NULL);
 	sync->escape_pressed = false;
 	sync->compute_nb = 0;

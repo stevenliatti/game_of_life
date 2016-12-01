@@ -14,6 +14,8 @@
 
 #include "workers_management.h"
 #include "workers_compute.h"
+#include "keyboard_interrupt.h"
+#include "display_board.h"
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
@@ -22,6 +24,7 @@ int main(int argc, char** argv) {
 /*		struct timespec start, finish;*/
 /*		clock_gettime(CLOCK_MONOTONIC, &start);*/
 
+		/// declaration section
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
 		int seed = atoi(argv[3]);
@@ -29,17 +32,29 @@ int main(int argc, char** argv) {
 		int freq = atoi(argv[5]);
 		int workers_nb = atoi(argv[6]);
 		pthread_t t[workers_nb];
+		///
 
+		/// initialization section
 		worker_t* workers = workers_init(workers_nb, width, height, seed, prob);
-		print_board(workers->board);
+		///
 
+		/// threads creation section
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
 		}
+		pthread_t th_display;
+		CHECK_ERR(pthread_create(&th_display, NULL, display, workers), "pthread_create failed!");
+		pthread_t th_stop;
+		CHECK_ERR(pthread_create(&th_stop, NULL, keypress_thread, workers->sync), "pthread_create failed!");
+		///
 
+		/// threads join section
+		CHECK_ERR(pthread_join(th_stop, NULL), "pthread_join failed!");
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_join(t[i], NULL), "pthread_join failed!");
 		}
+		CHECK_ERR(pthread_join(th_display, NULL), "pthread_join failed!");
+		///
 
 /*		clock_gettime(CLOCK_MONOTONIC, &finish);*/
 /*		double elapsed = finish.tv_sec - start.tv_sec;*/

@@ -3,7 +3,7 @@ LIBS=-lSDL2 -lpthread
 
 all: gameoflife
 
-gameoflife: gameoflife.o gfx.o workers_management.o workers_compute.o
+gameoflife: gameoflife.o gfx.o workers_management.o workers_compute.o keyboard_interrupt.o display_board.o
 	$(GCC) $^ -o $@ $(LIBS)
 
 gameoflife.o: gameoflife.c
@@ -18,7 +18,11 @@ workers_management.o: workers_management.c
 workers_compute.o: workers_compute.c
 	$(GCC) $< -c
 
-
+keyboard_interrupt.o: keyboard_interrupt.c
+	$(GCC) $< -c
+	
+display_board.o: display_board.c
+	$(GCC) $< -c
 
 run: gameoflife
 	./$<

@@ -45,7 +45,7 @@ void* work(void* arg) {
 	int select = worker->id;
 
 	while (!worker->sync->escape_pressed) {
-		while (select <= squares_nb) {
+		while (select < squares_nb) {
 
 
 			int row = select / worker->board->width;
@@ -61,13 +61,16 @@ void* work(void* arg) {
 		pthread_mutex_lock(&(worker->sync->compute_nb_mutex));
 		worker->sync->compute_nb++;
 		pthread_mutex_unlock(&(worker->sync->compute_nb_mutex));
+
 		if (worker->sync->compute_nb == worker->workers_nb) {
 			worker->sync->compute_nb = 0;
-			sem_post(&(worker->sync->sem_display));
+			//if the current thread is the last one, it will allow display thread
+			//to be executed by sem_workers
+			sem_post(&(worker->sync->sem_workers));
 		}
+		//threads will be bocked here and wait for display thread to be executed to resume
+		// their routines
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
-
-		update_board(worker->board);
 	}
 
 	return NULL;
