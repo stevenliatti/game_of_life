@@ -36,8 +36,8 @@ void update_board(board_t* board) {
 }
 
 /**
- * @param arg 
- * @return 
+ * @param arg
+ * @return
  */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
@@ -58,9 +58,14 @@ void* work(void* arg) {
 		select = worker->id;
 
 		// PASSER LA MAIN AU THREAD AFFICHAGE
-		pthread_mutex_lock(&(worker->sync->mutex_compute_nb));
+		pthread_mutex_lock(&(worker->sync->compute_nb_mutex));
 		worker->sync->compute_nb++;
-		pthread_mutex_unlock(&(worker->sync->mutex_compute_nb));
+		pthread_mutex_unlock(&(worker->sync->compute_nb_mutex));
+		if (worker->sync->compute_nb == worker->workers_nb) {
+			worker->sync->compute_nb = 0;
+			sem_post(&(worker->sync->sem_display));
+		}
+		pthread_barrier_wait(&(worker->sync->workers_barrier));
 
 		update_board(worker->board);
 	}

@@ -14,9 +14,9 @@
 
 typedef struct sync_st {
 	pthread_barrier_t escape_barrier;
-	pthread_barrier_t worker_barrier;
+	pthread_barrier_t workers_barrier;
 	sem_t sem_display;
-	pthread_mutex_t mutex_compute_nb;
+	pthread_mutex_t compute_nb_mutex;
 	bool escape_pressed;
 	int compute_nb;
 } sync_t;

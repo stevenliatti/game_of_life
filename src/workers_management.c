@@ -52,9 +52,9 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 sync_t* sync_init(int workers_nb) {
 	sync_t* sync = malloc(sizeof(sync_t));
 	pthread_barrier_init(&(sync->escape_barrier),NULL,2);
-	pthread_barrier_init(&(sync->escape_barrier),NULL, workers_nb);
+	pthread_barrier_init(&(sync->workers_barrier),NULL,workers_nb+1);
 	sem_init(&(sync->sem_display),0,0);
-	pthread_mutex_init(&(sync->mutex_compute_nb), NULL);
+	pthread_mutex_init(&(sync->compute_nb_mutex), NULL);
 	sync->escape_pressed = false;
 	sync->compute_nb = 0;
 	return sync;
