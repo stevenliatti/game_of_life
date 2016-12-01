@@ -1,12 +1,3 @@
-#define _GNU_SOURCE
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <time.h>
-#include <pthread.h>
-#include <semaphore.h>
 #include "workers_management.h"
 
 board_t* board_alloc(int width, int height) {
@@ -35,8 +26,8 @@ void update_neighbours(square_t** matrix, int x, int y) {
 	}
 }
 
-board_t* board_gen(int width, int height, int prob) {
-	srand(time(NULL));
+board_t* board_gen(int width, int height, int seed, int prob) {
+	srand(seed);
 	board_t* board = board_alloc(width,height);
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
@@ -58,18 +49,21 @@ board_t* board_gen(int width, int height, int prob) {
 	return board;
 }
 
-sync_t* sync_init() {
+sync_t* sync_init(int workers_nb) {
 	sync_t* sync = malloc(sizeof(sync_t));
-	pthread_barrier_init(&(sync->barrier),NULL,2);
+	pthread_barrier_init(&(sync->escape_barrier),NULL,2);
+	pthread_barrier_init(&(sync->escape_barrier),NULL, workers_nb);
 	sem_init(&(sync->sem_display),0,0);
-	sem_init(&(sync->sem_work),0,0);
+	pthread_mutex_init(&(sync->mutex_compute_nb), NULL);
+	sync->escape_pressed = false;
+	sync->compute_nb = 0;
 	return sync;
 }
 
-worker_t* workers_init(int workers_nb,int width,int height,int prob) {
+worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob) {
 	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
-	board_t* board = board_gen(width,height,prob);
-	sync_t* sync = sync_init();
+	board_t* board = board_gen(width, height, seed, prob);
+	sync_t* sync = sync_init(workers_nb);
 	for(int i = 0; i < workers_nb; i++) {
 		workers[i].board = board;
 		workers[i].id = i;

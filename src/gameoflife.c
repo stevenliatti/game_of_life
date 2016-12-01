@@ -12,23 +12,10 @@
 * @version 1.0
 */
 
-#define _GNU_SOURCE
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <string.h>
-#include <time.h>
-#include <stdbool.h>
 #include "workers_management.h"
+#include "workers_compute.h"
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
-
-void* work(void* arg) {
-	worker_t* worker = (worker_t*) arg;
-
-}
 
 int main(int argc, char** argv) {
 	if (argc == 7) {
@@ -37,11 +24,14 @@ int main(int argc, char** argv) {
 
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
+		int seed = atoi(argv[3]);
 		int prob = (int)(atof(argv[4])*100);
+		int freq = atoi(argv[5]);
 		int workers_nb = atoi(argv[6]);
 		pthread_t t[workers_nb];
 
-		worker_t workers = workers_init(workers_nb,width,height,prob);
+		worker_t* workers = workers_init(workers_nb, width, height, seed, prob);
+		print_board(workers->board);
 
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");

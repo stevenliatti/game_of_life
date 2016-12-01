@@ -26,23 +26,6 @@ void update_square(square_t* square) {
 /**
  *
  */
-void update_neighbours(square_t** matrix, int x, int y) {
-	matrix[x][y].nb_neighbours = 0;
-	for (int i = x - 1; i <= x + 1; i++) {
-		for (int j = y - 1; j <= y + 1; j++) {
-			if (matrix[i][j].is_alive) {
-				matrix[x][y].nb_neighbours++;
-			}
-		}
-	}
-	if (matrix[x][y].is_alive) {
-		matrix[x][y].nb_neighbours--;
-	}
-}
-
-/**
- *
- */
 void update_board(board_t* board) {
 	for (int i = 1; i < board->width - 1; i++) {
 		for (int j = 1; j < board->height - 1; j++) {
@@ -61,18 +44,23 @@ void* work(void* arg) {
 	int squares_nb = worker->board->width * worker->board->height;
 	int select = worker->id;
 
-	while (!worker->synchronization->escape_pressed) {
+	while (!worker->sync->escape_pressed) {
 		while (select <= squares_nb) {
+
+
 			int row = select / worker->board->width;
 			int col = select % worker->board->height;
 
-			update_square(worker->board->matrix[row][col]);
+			update_square(&(worker->board->matrix[row][col]));
 
 			select += worker->workers_nb;
 		}
 		select = worker->id;
 
 		// PASSER LA MAIN AU THREAD AFFICHAGE
+		pthread_mutex_lock(&(worker->sync->mutex_compute_nb));
+		worker->sync->compute_nb++;
+		pthread_mutex_unlock(&(worker->sync->mutex_compute_nb));
 
 		update_board(worker->board);
 	}
