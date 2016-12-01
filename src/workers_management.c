@@ -80,11 +80,15 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob
 }
 
 void workers_free(worker_t* workers) {
-		free(workers->board->matrix[0]);
-		free(workers->board->matrix);
-		free(workers->board);
-		free(workers->sync);
-		free(workers);
+	free(workers->board->matrix[0]);
+	free(workers->board->matrix);
+	free(workers->board);
+	pthread_barrier_destroy(&(workers->sync->workers_barrier));
+	sem_destroy(&(workers->sync->sem_workers));
+	sem_destroy(&(workers->sync->sem_escape));
+	pthread_mutex_destroy(&(workers->sync->compute_nb_mutex));
+	free(workers->sync);
+	free(workers);
 }
 
 void print_board(board_t* board) {

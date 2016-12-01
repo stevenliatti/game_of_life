@@ -1,4 +1,5 @@
 #include "display_board.h"
+#include "workers_compute.h"
 
 /// Render some white noise.
 /// @param context graphical context to use.
@@ -37,13 +38,13 @@ void* display(void* arg) {
 			sem_wait(&(worker->sync->sem_workers));
 
 			update_board(worker->board);
-			
+
 			render(ctxt, worker->board);
 			gfx_present(ctxt);
 
 			//here, this thread will be the last thread achieving the barrier
 			//so, all threads will resume their routines
-			pthread_barrier_wait(&(worker->sync->workers_barrier));	
+			pthread_barrier_wait(&(worker->sync->workers_barrier));
 		}
 
 		gfx_destroy(ctxt);

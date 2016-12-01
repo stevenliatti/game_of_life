@@ -17,10 +17,6 @@ void update_square(square_t* square) {
 			square->is_alive = true;
 		}
 	}
-
-	// Judicieux de faire ça ici ? Risque de faire chier aux voisins
-	// mieux vaut parcourir toutes les cases après avoir fait update_square et mettre à jour le nombre de voisins
-	//square->is_alive_past = square->is_alive;
 }
 
 /**
@@ -36,6 +32,19 @@ void update_board(board_t* board) {
 }
 
 /**
+ * CETTE FONCTION AUSSI N'EST PAS JUSTE ------------------------------------------------------------------------------------------------
+ */
+void update_board_threaded(worker_t* worker, int squares_nb, int select) {
+	while (select < squares_nb) {
+		int row = select / worker->board->width;
+		int col = select % worker->board->height;
+		update_neighbours(worker->board->matrix, row, col);
+		worker->board->matrix[row][col].is_alive_past = worker->board->matrix[row][col].is_alive;
+		select += worker->workers_nb;
+	}
+}
+
+/**
  * @param arg
  * @return
  */
@@ -43,19 +52,15 @@ void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
 	int squares_nb = worker->board->width * worker->board->height;
 	int select = worker->id;
-	
+
+	// VA FALLOIR REVOIR CE BOUT DE CODE -------------------------------------------------------------------------------------------
 	while (!worker->sync->escape_pressed) {
 		while (select < squares_nb) {
-
-
 			int row = select / worker->board->width;
 			int col = select % worker->board->height;
-
 			update_square(&(worker->board->matrix[row][col]));
-
 			select += worker->workers_nb;
 		}
-		select = worker->id;
 
 		// PASSER LA MAIN AU THREAD AFFICHAGE
 		pthread_mutex_lock(&(worker->sync->compute_nb_mutex));
@@ -67,11 +72,12 @@ void* work(void* arg) {
 			//if the current thread is the last one, it will allow display thread
 			//to be executed by sem_workers
 			sem_post(&(worker->sync->sem_workers));
-
 		}
 		//threads will be bocked here and wait for display thread to be executed to resume
 		// their routines
-		pthread_barrier_wait(&(worker->sync->workers_barrier));		
+		pthread_barrier_wait(&(worker->sync->workers_barrier));
+		//update_board_threaded(worker, squares_nb, select);
+		select = worker->id;
 	}
 
 	return NULL;
