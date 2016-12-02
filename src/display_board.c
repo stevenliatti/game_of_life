@@ -8,9 +8,9 @@ void render(struct gfx_context_t *context, board_t *board) {
 
 	uint32_t color = COLOR_RED;
 
-	for (int i = 0; i < board->width; ++i)
+	for (int i = 0; i < board->height; ++i)
 	{
-		for (int j = 0; j < board->height; ++j)
+		for (int j = 0; j < board->width; ++j)
 		{
 			if (board->matrix[i][j].is_alive)
 				gfx_putpixel(context, j, i, color);
@@ -41,6 +41,8 @@ void* display(void* arg) {
 
 			render(ctxt, worker->board);
 			gfx_present(ctxt);
+
+			sleep(4);
 
 			//here, this thread will be the last thread achieving the barrier
 			//so, all threads will resume their routines

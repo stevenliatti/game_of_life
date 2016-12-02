@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "gfx.h"
 
 #ifndef _WORKERS_MANAGEMENT_H_
@@ -33,10 +34,17 @@ typedef struct board_st {
 	int height;
 } board_t;
 
+typedef struct point_st {
+	int i;
+	int j;
+} point_t;
+
 typedef struct worker_st {
 	board_t* board;
 	int workers_nb;
 	int id;
+	point_t* squares_to_compute;
+	int points_array_size;
 	sync_t* sync;
 } worker_t;
 

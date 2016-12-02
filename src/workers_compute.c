@@ -50,17 +50,24 @@ void update_board_threaded(worker_t* worker, int squares_nb, int select) {
  */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
-	int squares_nb = worker->board->width * worker->board->height;
-	int select = worker->id;
+	//int squares_nb = (worker->board->width - 1) * (worker->board->height - 1);
+	//int select = worker->id;
 
 	// VA FALLOIR REVOIR CE BOUT DE CODE -------------------------------------------------------------------------------------------
 	while (!worker->sync->escape_pressed) {
-		while (select < squares_nb) {
-			int row = select / worker->board->width;
-			int col = select % worker->board->height;
-			update_square(&(worker->board->matrix[row][col]));
-			select += worker->workers_nb;
+		for (int i = 0; i < worker->points_array_size; i++) {
+			if (worker->squares_to_compute[i].i > 0) {
+				int row = worker->squares_to_compute[i].i;
+				int col = worker->squares_to_compute[i].j;
+				update_square(&(worker->board->matrix[row][col]));
+			}
 		}
+		// while (select < squares_nb) {
+		// 	int row = (select / (worker->board->height - 1)) + 1;
+		// 	int col = (select % (worker->board->width - 1)) + 1;
+		// 	update_square(&(worker->board->matrix[row][col]));
+		// 	select += worker->workers_nb;
+		// }
 
 		// PASSER LA MAIN AU THREAD AFFICHAGE
 		pthread_mutex_lock(&(worker->sync->compute_nb_mutex));
@@ -77,7 +84,6 @@ void* work(void* arg) {
 		// their routines
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
 		//update_board_threaded(worker, squares_nb, select);
-		select = worker->id;
 	}
 
 	return NULL;

@@ -28,7 +28,8 @@ void update_neighbours(square_t** matrix, int x, int y) {
 
 board_t* board_gen(int width, int height, int seed, int prob) {
 	srand(seed);
-	board_t* board = board_alloc(width,height);
+	board_t* board = board_alloc(width, height);
+	int cnt = 0;
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			if (i == 0 || i == width-1 || j == 0 || j == height-1){
@@ -36,7 +37,10 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 				board->matrix[i][j].is_alive = false;
 			}
 			else {
-				if (rand() % 101 <= prob){
+				int random = rand() % 101;
+				//printf("%d ", random);
+				if (random <= prob){
+					cnt++;
 			 		board->matrix[i][j].is_alive_past = true;
 			 		board->matrix[i][j].is_alive = true;
 			 	}
@@ -47,12 +51,29 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 			}
 		}
 	}
+	printf("cnt : %d\n", cnt);
 	for (int i = 1; i < width-1; i++) {
 		for (int j = 1; j < height-1; j++) {
 			update_neighbours(board->matrix,i,j);
 		}
 	}
 	return board;
+}
+
+void squares_to_compute_gen(worker_t* workers) {
+	int count = 0;
+	int count2 = 0;
+	for (int i = 1; i < workers->board->width - 1; i++) {
+		for (int j = 1; j < workers->board->height - 1; j++) {
+			
+			workers[count % workers->workers_nb].squares_to_compute[count2].i = i;			
+			workers[count % workers->workers_nb].squares_to_compute[count2].j = j;
+			count++;
+			if (count % workers->workers_nb == 0) {
+				count2++;
+			}
+		}
+	}
 }
 
 sync_t* sync_init(int workers_nb) {
@@ -70,12 +91,23 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob
 	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
+	int effective_squares_nb = (width -1) * ( height - 1);
+	double double_size = ((double) effective_squares_nb) / workers_nb;
+	int int_size = effective_squares_nb / workers_nb;
+	int points_array_size = (int) (double_size - (double_size - int_size)) + 1;
 	for(int i = 0; i < workers_nb; i++) {
 		workers[i].board = board;
 		workers[i].id = i;
 		workers[i].workers_nb = workers_nb;
 		workers[i].sync = sync;
+		workers[i].squares_to_compute = malloc(sizeof(point_t) * points_array_size);
+		workers[i].points_array_size = points_array_size;
+		for (int j = 0; j < points_array_size; j++) {
+			workers[i].squares_to_compute[j].i = -42;
+			workers[i].squares_to_compute[j].j = -42;
+		}
 	}
+	squares_to_compute_gen(workers);
 	return workers;
 }
 
