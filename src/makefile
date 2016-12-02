@@ -29,3 +29,5 @@ run: gameoflife
 
 clean:
 	rm -f *.o gameoflife *~
+
+rebuild: clean all

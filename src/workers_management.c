@@ -39,7 +39,7 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 			else {
 				int random = rand() % 101;
 				//printf("%d ", random);
-				if (random <= prob){
+				if (prob != 0 && random <= prob){
 					cnt++;
 			 		board->matrix[i][j].is_alive_past = true;
 			 		board->matrix[i][j].is_alive = true;
@@ -74,6 +74,15 @@ void squares_to_compute_gen(worker_t* workers) {
 			}
 		}
 	}
+	///////
+	// for(int i = 0; i < workers->workers_nb; i++) {
+
+	// 	for (int j = 0; j < workers[i].points_array_size; j++)
+	// 	{
+	// 		printf("[%d,%d] ", workers[i].squares_to_compute[j].i, workers[i].squares_to_compute[j].j);
+	// 	}
+	// 	printf("\n");
+	// }
 }
 
 sync_t* sync_init(int workers_nb) {
@@ -91,10 +100,17 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob
 	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
-	int effective_squares_nb = (width -1) * ( height - 1);
+
+	int effective_squares_nb = (width -2) * ( height - 2);
 	double double_size = ((double) effective_squares_nb) / workers_nb;
 	int int_size = effective_squares_nb / workers_nb;
-	int points_array_size = (int) (double_size - (double_size - int_size)) + 1;
+	int points_array_size = int_size;
+	if (double_size != (double) int_size){
+		points_array_size = (int) (double_size - (double_size - int_size)) + 1;
+	}
+
+	printf("effective_squares_nb : %d\n", effective_squares_nb);
+	printf("point_array_size : %d\n", points_array_size);
 	for(int i = 0; i < workers_nb; i++) {
 		workers[i].board = board;
 		workers[i].id = i;
