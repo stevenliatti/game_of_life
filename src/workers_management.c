@@ -80,7 +80,6 @@ sync_t* sync_init(int workers_nb) {
 	pthread_barrier_init(&(sync->workers_barrier),NULL,workers_nb+1);
 	sem_init(&(sync->sem_display),0,0);
 	pthread_mutex_init(&(sync->compute_nb_mutex), NULL);
-	pthread_mutex_init(&(sync->keyboard_mutex), NULL);
 	sync->escape_pressed = false;
 	sync->compute_nb = 0;
 	return sync;
