@@ -34,19 +34,14 @@ typedef struct board_st {
 	int height;
 } board_t;
 
-typedef struct point_st {
-	int i;
-	int j;
-} point_t;
-
 typedef struct worker_st {
+	int id;
+	int workers_nb;
+	double uperiod;
 	board_t* board;
 	sync_t* sync;
-	int workers_nb;
-	int id;
-	double uperiod;
-	point_t* squares_to_compute;
-	int points_array_size;
+	square_t** asigned_squares;
+	int asigned_squares_nb;
 } worker_t;
 
 worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob, int freq);

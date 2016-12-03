@@ -36,11 +36,9 @@ void* work(void* arg) {
 	//int select = worker->id;
 
 	while (!worker->sync->escape_pressed) {
-		for (int i = 0; i < worker->points_array_size; i++) {
-			if (worker->squares_to_compute[i].i > 0) {
-				int row = worker->squares_to_compute[i].i;
-				int col = worker->squares_to_compute[i].j;
-				update_square(&(worker->board->matrix[row][col]));
+		for (int i = 0; i < worker->asigned_squares_nb; i++) {
+			if (worker->asigned_squares[i] != NULL) {
+				update_square(worker->asigned_squares[i]);
 			}
 		}
 

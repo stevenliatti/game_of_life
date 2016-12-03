@@ -58,13 +58,12 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 	return board;
 }
 
-void squares_to_compute_gen(worker_t* workers) {
+void asigned_squares_gen(worker_t* workers) {
 	int count = 0;
 	int count2 = 0;
 	for (int i = 1; i < workers->board->width - 1; i++) {
 		for (int j = 1; j < workers->board->height - 1; j++) {
-			workers[count % workers->workers_nb].squares_to_compute[count2].i = i;			
-			workers[count % workers->workers_nb].squares_to_compute[count2].j = j;
+			workers[count % workers->workers_nb].asigned_squares[count2] = &(workers->board->matrix[i][j]);
 			count++;
 			if (count % workers->workers_nb == 0) {
 				count2++;
@@ -88,13 +87,10 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob
 	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
-
-	int effective_squares_nb = (width -2) * ( height - 2);
-	double double_size = ((double) effective_squares_nb) / workers_nb;
-	int int_size = effective_squares_nb / workers_nb;
-	int points_array_size = int_size;
-	if (double_size != (double) int_size){
-		points_array_size++;
+	int squares_nb = (width - 2) * (height - 2);
+	int asigned_squares_nb = squares_nb / workers_nb;;
+	if (squares_nb % workers_nb != 0){
+		asigned_squares_nb++;
 	}
 
 	for(int i = 0; i < workers_nb; i++) {
@@ -103,14 +99,10 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob
 		workers[i].workers_nb = workers_nb;
 		workers[i].sync = sync;
 		workers[i].uperiod = (1.0 / freq) * 1e6;
-		workers[i].squares_to_compute = malloc(sizeof(point_t) * points_array_size);
-		workers[i].points_array_size = points_array_size;
-		for (int j = 0; j < points_array_size; j++) {
-			workers[i].squares_to_compute[j].i = -42;
-			workers[i].squares_to_compute[j].j = -42;
-		}
+		workers[i].asigned_squares = malloc(sizeof(square_t*)*asigned_squares_nb);
+		workers[i].asigned_squares_nb = asigned_squares_nb;
 	}
-	squares_to_compute_gen(workers);
+	asigned_squares_gen(workers);
 	return workers;
 }
 
@@ -123,6 +115,8 @@ void workers_free(worker_t* workers) {
 	sem_destroy(&(workers->sync->sem_escape));
 	pthread_mutex_destroy(&(workers->sync->compute_nb_mutex));
 	free(workers->sync);
+	for (int i = 0; i < workers->workers_nb; i++)
+		free(workers[i].asigned_squares);
 	free(workers);
 }
 
