@@ -2,8 +2,6 @@
 * @file gameoflife.c
 * @brief Game of life
 *
-*
-*
 * @author Steven Liatti
 * @author Orphée Antoniadis
 * @author Raed Abdennadher
@@ -21,8 +19,6 @@
 
 int main(int argc, char** argv) {
 	if (argc == 7) {
-/*		struct timespec start, finish;*/
-/*		clock_gettime(CLOCK_MONOTONIC, &start);*/
 
 		/// declaration section
 		int width = atoi(argv[1]);
@@ -35,7 +31,7 @@ int main(int argc, char** argv) {
 		///
 
 		/// initialization section
-		worker_t* workers = workers_init(workers_nb, width, height, seed, prob);
+		worker_t* workers = workers_init(workers_nb, width, height, seed, prob, freq);
 		///
 
 		/// threads creation section
@@ -56,10 +52,6 @@ int main(int argc, char** argv) {
 		CHECK_ERR(pthread_join(th_display, NULL), "pthread_join failed!");
 		///
 
-/*		clock_gettime(CLOCK_MONOTONIC, &finish);*/
-/*		double elapsed = finish.tv_sec - start.tv_sec;*/
-/*		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;*/
-/*		printf("%f\n", elapsed);*/
 		workers_free(workers);
 		return EXIT_SUCCESS;
 	}

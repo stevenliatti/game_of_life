@@ -14,4 +14,4 @@ run: gfx_example
 	./$<
 
 clean:
-	rm -f *.o gfx_example
+	rm -f *.o gfx_example *~

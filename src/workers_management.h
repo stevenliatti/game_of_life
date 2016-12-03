@@ -16,7 +16,7 @@
 typedef struct sync_st {
 	sem_t sem_escape;
 	pthread_barrier_t workers_barrier;
-	sem_t sem_workers;
+	sem_t sem_display;
 	pthread_mutex_t compute_nb_mutex;
 	bool escape_pressed;
 	int compute_nb;
@@ -41,14 +41,15 @@ typedef struct point_st {
 
 typedef struct worker_st {
 	board_t* board;
+	sync_t* sync;
 	int workers_nb;
 	int id;
+	double uperiod;
 	point_t* squares_to_compute;
 	int points_array_size;
-	sync_t* sync;
 } worker_t;
 
-worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob);
+worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob, int freq);
 void workers_free(worker_t* workers);
 void update_neighbours(square_t** matrix, int x, int y);
 void print_board(board_t* board);

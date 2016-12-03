@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
 	worker_t workers[workers_nb];
 	workers_init(workers,workers_nb,width,height);
 	print_board(workers->board);
+	printf("%f\n", 1e6);
 	
 	for (int i = 0; i < workers_nb; i++) {
 		CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
