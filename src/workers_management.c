@@ -12,17 +12,17 @@ board_t* board_alloc(int width, int height) {
 	return board;
 }
 
-void update_neighbours(square_t** matrix, int x, int y) {
-	matrix[x][y].nb_neighbours = 0;
-	for (int i = x - 1; i <= x + 1; i++) {
-		for (int j = y - 1; j <= y + 1; j++) {
+void update_neighbours(square_t** matrix, square_t* square) {
+	square->nb_neighbours = 0;
+	for (int i = square->x - 1; i <= square->x + 1; i++) {
+		for (int j = square->y - 1; j <= square->y + 1; j++) {
 			if (matrix[i][j].is_alive) {
-				matrix[x][y].nb_neighbours++;
+				square->nb_neighbours++;
 			}
 		}
 	}
-	if (matrix[x][y].is_alive) {
-		matrix[x][y].nb_neighbours--;
+	if (square->is_alive) {
+		square->nb_neighbours--;
 	}
 }
 
@@ -32,6 +32,8 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 	int cnt = 0;
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
+			board->matrix[i][j].x = i;
+			board->matrix[i][j].y = j;
 			if (i == 0 || i == width-1 || j == 0 || j == height-1){
 				board->matrix[i][j].is_alive_past = false;
 				board->matrix[i][j].is_alive = false;
@@ -52,7 +54,7 @@ board_t* board_gen(int width, int height, int seed, int prob) {
 	}
 	for (int i = 1; i < width-1; i++) {
 		for (int j = 1; j < height-1; j++) {
-			update_neighbours(board->matrix,i,j);
+			update_neighbours(board->matrix,&(board->matrix[i][j]));
 		}
 	}
 	return board;
@@ -78,6 +80,7 @@ sync_t* sync_init(int workers_nb) {
 	pthread_barrier_init(&(sync->workers_barrier),NULL,workers_nb+1);
 	sem_init(&(sync->sem_display),0,0);
 	pthread_mutex_init(&(sync->compute_nb_mutex), NULL);
+	pthread_mutex_init(&(sync->keyboard_mutex), NULL);
 	sync->escape_pressed = false;
 	sync->compute_nb = 0;
 	return sync;

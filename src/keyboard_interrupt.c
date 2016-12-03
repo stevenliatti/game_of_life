@@ -15,7 +15,7 @@ SDL_Keycode keypress() {
 /**
  *
  */
-void* keypress_thread(void* arg){
+void* keypress_thread(void* arg) {
 	sync_t* sync = (sync_t*) arg;
 	//wait for the graphical context to be built in "work" thread for the first time
 	sem_wait(&(sync->sem_escape));

@@ -16,26 +16,20 @@ void update_square(square_t* square) {
 	}
 }
 
-void update_board(board_t* board) {
-	for (int i = 1; i < board->width - 1; i++) {
-		for (int j = 1; j < board->height - 1; j++) {
-			update_neighbours(board->matrix, i, j);
-			board->matrix[i][j].is_alive_past = board->matrix[i][j].is_alive;
+void update_board(worker_t* worker) {
+	for (int i = 0; i < worker->asigned_squares_nb; i++) {
+		if (worker->asigned_squares[i] != NULL) {
+			update_neighbours(worker->board->matrix, worker->asigned_squares[i]);
+			worker->asigned_squares[i]->is_alive_past = worker->asigned_squares[i]->is_alive;
 		}
 	}
 }
 
-/*void update_board_threaded(worker_t* worker, int squares_nb, int select) {*/
-/*	*/
-/*}*/
-
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
-	pthread_barrier_wait(&(worker->sync->workers_barrier));
-	//int squares_nb = (worker->board->width - 1) * (worker->board->height - 1);
-	//int select = worker->id;
 
 	while (!worker->sync->escape_pressed) {
+		pthread_barrier_wait(&(worker->sync->workers_barrier));
 		for (int i = 0; i < worker->asigned_squares_nb; i++) {
 			if (worker->asigned_squares[i] != NULL) {
 				update_square(worker->asigned_squares[i]);
@@ -49,7 +43,6 @@ void* work(void* arg) {
 
 		if (worker->sync->compute_nb == worker->workers_nb) {
 			worker->sync->compute_nb = 0;
-			update_board(worker->board);
 			// if the current thread is the last one, it will allow display thread
 			// to be executed by sem_workers
 			sem_post(&(worker->sync->sem_display));
@@ -57,7 +50,8 @@ void* work(void* arg) {
 
 		// threads will be blocked here and wait for display thread
 		// to be executed to resume their routines
-		pthread_barrier_wait(&(worker->sync->workers_barrier));	
+		pthread_barrier_wait(&(worker->sync->workers_barrier));
+		update_board(worker);
 	}
 
 	return NULL;
