@@ -19,9 +19,10 @@ void* keypress_thread(void* arg) {
 	sync_t* sync = (sync_t*) arg;
 	//wait for the graphical context to be built in "work" thread for the first time
 	sem_wait(&(sync->sem_escape));
-	while (!sync->escape_pressed) {
-		sync->escape_pressed = keypress() == SDLK_ESCAPE;
+	while (!(keypress() == SDLK_ESCAPE)) {
+		//sync->escape_pressed = keypress() == SDLK_ESCAPE;
 	}
+	sync->escape_pressed = true;
 	return NULL;
 }
 
