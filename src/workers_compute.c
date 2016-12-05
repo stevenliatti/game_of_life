@@ -28,7 +28,7 @@ void update_board(worker_t* worker) {
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
 
-	while (!worker->sync->escape_pressed) {
+	while (!worker->sync->end_game) {
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
 		for (int i = 0; i < worker->asigned_squares_nb; i++) {
 			if (worker->asigned_squares[i] != NULL) {

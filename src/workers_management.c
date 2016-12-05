@@ -81,6 +81,7 @@ sync_t* sync_init(int workers_nb) {
 	sem_init(&(sync->sem_display),0,0);
 	pthread_mutex_init(&(sync->compute_nb_mutex), NULL);
 	sync->escape_pressed = false;
+	sync->end_game = false;
 	sync->compute_nb = 0;
 	return sync;
 }

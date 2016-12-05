@@ -28,7 +28,7 @@ void* display(void* arg) {
 		// notify "keypress_thread" that the graphical context is built and initialized
 		sem_post(&(worker->sync->sem_escape));
 		
-		while (!worker->sync->escape_pressed) {
+		while (!worker->sync->end_game) {
 			clock_gettime(CLOCK_MONOTONIC, &start);
 			// the barrier is here to make sure that all the workers will
 			// start after the start of the timer 
@@ -48,6 +48,10 @@ void* display(void* arg) {
 			}
 			
 			gfx_present(ctxt);
+
+			if (worker->sync->escape_pressed){
+				worker->sync->end_game = true;
+			}
 
 			// here, this thread will be the last thread achieving the barrier
 			// so, all threads will resume their routines

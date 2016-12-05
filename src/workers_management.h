@@ -19,6 +19,7 @@ typedef struct sync_st {
 	sem_t sem_display;
 	pthread_mutex_t compute_nb_mutex;
 	bool escape_pressed;
+	bool end_game;
 	int compute_nb;
 } sync_t;
 
