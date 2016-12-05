@@ -27,7 +27,14 @@ int main(int argc, char** argv) {
 		int prob = (int)(atof(argv[4])*100);
 		int freq = atoi(argv[5]);
 		int workers_nb = atoi(argv[6]);
-		pthread_t t[workers_nb];
+
+
+		int squares_nb = (width - 2) * (height - 2);
+		if (workers_nb > squares_nb) {
+			printf("The maximum number of threads that can be used for the resolution %dx%d is %d.\n", width, height, squares_nb);
+			printf("So that, the game will run with only %d threads.\n", squares_nb);
+			workers_nb = squares_nb;
+		}
 		///
 
 		/// initialization section
@@ -35,6 +42,7 @@ int main(int argc, char** argv) {
 		///
 
 		/// threads creation section
+		pthread_t t[workers_nb];
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
 		}
