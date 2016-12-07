@@ -60,12 +60,12 @@ void update_neighbours(square_t** matrix, square_t* square) {
 }
 
 /**
- * This function generate the game board. Foreach matrix's square of the board, 
- * 
+ * This function generate the game board. It sets the state of each square of
+ * the board and then the number of alive cells near each cell.
  *
  * @param width the width of the board in pixels
  * @param height the height of the board in pixels
- * @param seed the an integer used to randomly populate the board
+ * @param seed an integer used to randomly populate the board
  * @param prob the probability of having a live cell during initialization
  * @return the constructed board
  */
@@ -103,12 +103,18 @@ board_t* board_gen(int width, int height, int seed, double prob) {
 	return board;
 }
 
-void asigned_squares_gen(worker_t* workers) {
+/**
+ * This function sets the squares that each worker will work on
+ *
+ * @param workers array of worker_t
+ * @return void
+ */
+void assigned_squares_gen(worker_t* workers) {
 	int count = 0;
 	int count2 = 0;
 	for (int i = 1; i < workers->board->width - 1; i++) {
 		for (int j = 1; j < workers->board->height - 1; j++) {
-			workers[count % workers->workers_nb].asigned_squares[count2] = &(workers->board->matrix[i][j]);
+			workers[count % workers->workers_nb].assigned_squares[count2] = &(workers->board->matrix[i][j]);
 			count++;
 			if (count % workers->workers_nb == 0) {
 				count2++;
@@ -136,9 +142,9 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
 	int squares_nb = (width - 2) * (height - 2);
-	int asigned_squares_nb = squares_nb / workers_nb;;
+	int assigned_squares_nb = squares_nb / workers_nb;;
 	if (squares_nb % workers_nb != 0){
-		asigned_squares_nb++;
+		assigned_squares_nb++;
 	}
 
 	for(int i = 0; i < workers_nb; i++) {
@@ -147,11 +153,11 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 		workers[i].workers_nb = workers_nb;
 		workers[i].sync = sync;
 		workers[i].uperiod = (1.0 / freq) * 1e6;
-		workers[i].asigned_squares = malloc(sizeof(square_t*) * asigned_squares_nb);
-		assert(workers[i].asigned_squares != NULL);
-		workers[i].asigned_squares_nb = asigned_squares_nb;
+		workers[i].assigned_squares = malloc(sizeof(square_t*) * assigned_squares_nb);
+		assert(workers[i].assigned_squares != NULL);
+		workers[i].assigned_squares_nb = assigned_squares_nb;
 	}
-	asigned_squares_gen(workers);
+	assigned_squares_gen(workers);
 	return workers;
 }
 
@@ -165,6 +171,6 @@ void workers_free(worker_t* workers) {
 	pthread_mutex_destroy(&(workers->sync->compute_nb_mutex));
 	free(workers->sync);
 	for (int i = 0; i < workers->workers_nb; i++)
-		free(workers[i].asigned_squares);
+		free(workers[i].assigned_squares);
 	free(workers);
 }
