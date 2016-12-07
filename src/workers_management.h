@@ -89,7 +89,7 @@ typedef struct worker_st {
 	int assigned_squares_nb;
 } worker_t;
 
-worker_t* workers_init(int workers_nb, int width, int height, int seed, int prob, int freq);
+worker_t* workers_init(int workers_nb, int width, int height, int seed, double prob, int freq);
 void workers_free(worker_t* workers);
 void update_neighbours(square_t** matrix, square_t* square);
 void print_board(board_t* board);
