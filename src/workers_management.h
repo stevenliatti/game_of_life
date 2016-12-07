@@ -5,7 +5,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <string.h>
-#include <time.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <assert.h>

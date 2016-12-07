@@ -117,7 +117,7 @@ void assigned_squares_gen(worker_t* workers) {
 			workers[worker_index % workers->workers_nb].assigned_squares[assigned_square_index]
 				= &(workers->board->matrix[i][j]);
 			worker_index++;
-			if (count % workers->workers_nb == 0) {
+			if (worker_index % workers->workers_nb == 0) {
 				assigned_square_index++;
 			}
 		}
