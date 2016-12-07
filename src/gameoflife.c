@@ -2,6 +2,8 @@
  * @file gameoflife.c
  * @brief Game of life
  *
+ * This is a modelisation of the Game of Life created by John Horton Conway in 1970.
+ *
  * @author Steven Liatti
  * @author Orphée Antoniadis
  * @author Raed Abdennadher
@@ -17,6 +19,14 @@
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
+/**
+ * This is the main function. It initialize variables, check arguments, launch 
+ * threads, join them and free the memory in use.
+ *
+ * @param argc 
+ * @param argv
+ * @return the code's exit of program
+ */
 int main(int argc, char** argv) {
 	if (argc == 7) {
 
