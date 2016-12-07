@@ -1,5 +1,28 @@
+/**
+ * @file workers_compute.c
+ * @brief Workers functions
+ *
+ * This file contains the functions for the workers. It's here where 
+ * the rules of the game are applied on each squares and where the 
+ * board is updated.
+ *
+ * @author Steven Liatti
+ * @author Orphée Antoniadis
+ * @author Raed Abdennadher
+ * @bug No known bugs.
+ * @date December 7, 2016
+ * @version 1.0
+ */
+
 #include "workers_compute.h"
 
+/**
+ * This function update the state of the square in argument in function 
+ * of the game of life's rules and the past state of the square itself.
+ *
+ * @param square the square considered
+ * @return void
+ */
 void update_square(square_t* square) {
 	if (square->is_alive_past) {
 		if ((square->nb_neighbours < 2) || (square->nb_neighbours > 3)) {
@@ -16,11 +39,18 @@ void update_square(square_t* square) {
 	}
 }
 
+/**
+ * This function update the squares that are assigned to the worker. Foreach square, 
+ * 
+ *
+ * @param worker the worker considered
+ * @return void
+ */
 void update_board(worker_t* worker) {
-	for (int i = 0; i < worker->asigned_squares_nb; i++) {
-		if (worker->asigned_squares[i] != NULL) {
-			update_neighbours(worker->board->matrix, worker->asigned_squares[i]);
-			worker->asigned_squares[i]->is_alive_past = worker->asigned_squares[i]->is_alive;
+	for (int i = 0; i < worker->assigned_squares_nb; i++) {
+		if (worker->assigned_squares[i] != NULL) {
+			update_neighbours(worker->board->matrix, worker->assigned_squares[i]);
+			worker->assigned_squares[i]->is_alive_past = worker->assigned_squares[i]->is_alive;
 		}
 	}
 }
@@ -30,9 +60,9 @@ void* work(void* arg) {
 
 	while (!worker->sync->end_game) {
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
-		for (int i = 0; i < worker->asigned_squares_nb; i++) {
-			if (worker->asigned_squares[i] != NULL) {
-				update_square(worker->asigned_squares[i]);
+		for (int i = 0; i < worker->assigned_squares_nb; i++) {
+			if (worker->assigned_squares[i] != NULL) {
+				update_square(worker->assigned_squares[i]);
 			}
 		}
 
@@ -44,7 +74,7 @@ void* work(void* arg) {
 			worker->sync->compute_nb = 0;
 			sem_post(&(worker->sync->sem_display));
 		}
-		
+
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
 		update_board(worker);
 	}
