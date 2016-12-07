@@ -1,3 +1,15 @@
+/**
+ * @file display_board.c
+ * @brief display context
+ *
+ * @author Steven Liatti
+ * @author Orphée Antoniadis
+ * @author Raed Abdennadher
+ * @bug No known bugs.
+ * @date December 7, 2016
+ * @version 1.0
+ */
+
 #include "display_board.h"
 #include "workers_compute.h"
 
