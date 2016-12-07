@@ -2,7 +2,7 @@
  * @file workers_compute.c
  * @brief Workers functions
  *
- * This file contains the functions for the workers. It's here where 
+ * This file contains functions for the workers. It's here where 
  * the rules of the game are applied on each squares and where the 
  * board is updated.
  *
@@ -25,7 +25,7 @@
  */
 void update_square(square_t* square) {
 	if (square->is_alive_past) {
-		if ((square->nb_neighbours < 2) || (square->nb_neighbours > 3)) {
+		if (square->nb_neighbours < 2 || square->nb_neighbours > 3) {
 			square->is_alive = false;
 		}
 		else if (square->nb_neighbours == 2 || square->nb_neighbours == 3) {
@@ -41,7 +41,7 @@ void update_square(square_t* square) {
 
 /**
  * This function update the squares that are assigned to the worker. Foreach square, 
- * 
+ * the past state and the neighbours are updated.
  *
  * @param worker the worker considered
  * @return void
@@ -55,6 +55,15 @@ void update_board(worker_t* worker) {
 	}
 }
 
+/**
+ * It's the main function for the workers : while the escape button is not
+ * pressed, the workers will calculate the next state of their squares. With 
+ * differents synchronization primitives, there is the guarantee that the display
+ * will wait on workers before executing.
+ *
+ * @param arg a pointer on void
+ * @return void
+ */
 void* work(void* arg) {
 	worker_t* worker = (worker_t*) arg;
 
