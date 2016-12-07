@@ -1,7 +1,10 @@
 /**
  * @file workers_management.c
- * @brief Game of life
- *
+ * @brief The management of the workers
+ * 
+ * This file contains the functions for the initialisation of the board, 
+ * the workers and the synchonisation's structure and their destruction.
+ * 
  * @author Steven Liatti
  * @author Orphée Antoniadis
  * @author Raed Abdennadher
@@ -36,7 +39,7 @@ board_t* board_alloc(int width, int height) {
 
 /**
  * This function update the neighbours number of the square in argument.
- * Each square has 8 neighbours to update
+ * Each square has 8 neighbours to update.
  *
  * @param matrix the matrix of squares
  * @param square the square considered
