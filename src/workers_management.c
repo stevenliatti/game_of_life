@@ -101,25 +101,32 @@ board_t* board_gen(int width, int height, int seed, double prob) {
 }
 
 /**
- * This function sets the squares that each worker will work on
+ * This function sets the squares that each worker will work on.
  *
  * @param workers array of worker_t
  * @return void
  */
 void assigned_squares_gen(worker_t* workers) {
-	int count = 0;
-	int count2 = 0;
+	int worker_index = 0;
+	int assigned_square_index = 0;
 	for (int i = 1; i < workers->board->width - 1; i++) {
 		for (int j = 1; j < workers->board->height - 1; j++) {
-			workers[count % workers->workers_nb].assigned_squares[count2] = &(workers->board->matrix[i][j]);
-			count++;
+			workers[worker_index % workers->workers_nb].assigned_squares[assigned_square_index]
+				= &(workers->board->matrix[i][j]);
+			worker_index++;
 			if (count % workers->workers_nb == 0) {
-				count2++;
+				assigned_square_index++;
 			}
 		}
 	}
 }
 
+/**
+ * This function initialize all the synchronization primitives.
+ *
+ * @param workers_nb number of thread workers
+ * @return sync the structure that contains our synchronization primitives
+ */
 sync_t* sync_init(int workers_nb) {
 	sync_t* sync = malloc(sizeof(sync_t));
 	assert(sync != NULL);
@@ -133,11 +140,24 @@ sync_t* sync_init(int workers_nb) {
 	return sync;
 }
 
+/**
+ * This function calls all the others to generate the board and the
+ * synchronization primitives and then initialize each worker.
+ *
+ * @param workers_nb number of thread workers
+ * @param width the width of the board in pixels
+ * @param height the height of the board in pixels
+ * @param seed an integer used to randomly populate the board
+ * @param prob the probability of having a live cell during initialization
+ * @param freq the refreshing frequency
+ * @return workers the array of worker_t
+ */
 worker_t* workers_init(int workers_nb, int width, int height, int seed, double prob, int freq) {
 	worker_t* workers = malloc(sizeof(worker_t)*workers_nb);
 	assert(workers != NULL);
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
+	// calculation of the number of squares that each worker will work on
 	int squares_nb = (width - 2) * (height - 2);
 	int assigned_squares_nb = squares_nb / workers_nb;;
 	if (squares_nb % workers_nb != 0){
@@ -158,6 +178,12 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 	return workers;
 }
 
+/**
+ * This function frees all the structures and synchronization primitives
+ *
+ * @param workers the array of worker_t
+ * @return void
+ */
 void workers_free(worker_t* workers) {
 	free(workers->board->matrix[0]);
 	free(workers->board->matrix);
