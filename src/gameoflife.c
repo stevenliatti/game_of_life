@@ -2,6 +2,8 @@
  * @file gameoflife.c
  * @brief Game of life
  *
+ * This is a modelisation of the Game of Life created by John Horton Conway in 1970.
+ *
  * @author Steven Liatti
  * @author Orphée Antoniadis
  * @author Raed Abdennadher
@@ -17,10 +19,17 @@
 
 #define CHECK_ERR(expr, msg) if (expr) { fprintf(stderr, "%s\n", msg); return EXIT_FAILURE; }
 
+/**
+ * This is the main function. It initialize variables, check arguments, launch 
+ * threads, join them and free the memory in use.
+ *
+ * @param argc 
+ * @param argv
+ * @return the code's exit of program
+ */
 int main(int argc, char** argv) {
 	if (argc == 7) {
 
-		/// declaration section
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
 		int seed = atoi(argv[3]);
@@ -39,13 +48,9 @@ int main(int argc, char** argv) {
 			printf("So that, the game will run with only %d threads.\n", squares_nb);
 			workers_nb = squares_nb;
 		}
-		///
 
-		/// initialization section
 		worker_t* workers = workers_init(workers_nb, width, height, seed, prob, freq);
-		///
 
-		/// threads creation section
 		pthread_t t[workers_nb];
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_create(&t[i], NULL, work, &workers[i]), "pthread_create failed!");
@@ -54,15 +59,12 @@ int main(int argc, char** argv) {
 		CHECK_ERR(pthread_create(&th_display, NULL, display, workers), "pthread_create failed!");
 		pthread_t th_stop;
 		CHECK_ERR(pthread_create(&th_stop, NULL, keypress_thread, workers->sync), "pthread_create failed!");
-		///
 
-		/// threads join section
 		CHECK_ERR(pthread_join(th_stop, NULL), "pthread_join failed!");
 		for (int i = 0; i < workers_nb; i++) {
 			CHECK_ERR(pthread_join(t[i], NULL), "pthread_join failed!");
 		}
 		CHECK_ERR(pthread_join(th_display, NULL), "pthread_join failed!");
-		///
 
 		workers_free(workers);
 		return EXIT_SUCCESS;

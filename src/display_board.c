@@ -1,3 +1,17 @@
+/**
+ * @file display_board.c
+ * @brief display context
+ *
+ * This file contains functions for the thread that display the board
+ *
+ * @author Steven Liatti
+ * @author Orphée Antoniadis
+ * @author Raed Abdennadher
+ * @bug No known bugs.
+ * @date December 7, 2016
+ * @version 1.0
+ */
+
 #include "display_board.h"
 #include "workers_compute.h"
 
@@ -26,12 +40,12 @@ void render(struct gfx_context_t *context, board_t *board) {
  * @param finish time
  * @return void
  */
-void adapt_frequency(struct timespec start, struct timespec finish){
+void adapt_frequency(struct timespec start, struct timespec finish, double uperiod){
 	double elapsed = (finish.tv_sec - start.tv_sec) * 1e6;
 	elapsed += (finish.tv_nsec - start.tv_nsec) / 1e3;
-	if (elapsed < worker->uperiod) {
-		useconds_t uperiod = worker->uperiod - elapsed;
-		usleep(uperiod);
+	if (elapsed < uperiod) {
+		useconds_t uperiod_sleep = uperiod - elapsed;
+		usleep(uperiod_sleep);
 	}
 }
 
@@ -40,7 +54,7 @@ void adapt_frequency(struct timespec start, struct timespec finish){
  * the graphical context, notify the context has been created, wait for all workers finish their treatments
  * and adapt frequency, then display the board. Finally, it will destroy the graphical context.
  *
- * @param arg worker struct
+ * @param arg worker_t struct
  * @return
  */
 void* display(void* arg) {
@@ -62,7 +76,7 @@ void* display(void* arg) {
 
 			clock_gettime(CLOCK_MONOTONIC, &finish); 
 			
-			adapt_frequency(start, finish);
+			adapt_frequency(start, finish, worker->uperiod);
 			
 			gfx_present(ctxt);
 

@@ -52,7 +52,8 @@ void gfx_putpixel(struct gfx_context_t *ctxt, int x, int y, uint32_t color) {
 /// @param ctxt Graphic context to clear.
 /// @param color Color to use.
 void gfx_clear(struct gfx_context_t *ctxt, uint32_t color) {
-	memset(ctxt->pixels, color, ctxt->width*ctxt->height*sizeof(uint32_t));
+	for (int i = 0; i < ctxt->width*ctxt->height; i++)
+		ctxt->pixels[i] = color;
 }
 
 /// Display the graphic context.
