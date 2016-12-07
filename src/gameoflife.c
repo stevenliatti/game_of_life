@@ -1,14 +1,14 @@
 /**
-* @file gameoflife.c
-* @brief Game of life
-*
-* @author Steven Liatti
-* @author Orphée Antoniadis
-* @author Raed Abdennadher
-* @bug No known bugs.
-* @date November 23, 2016
-* @version 1.0
-*/
+ * @file gameoflife.c
+ * @brief Game of life
+ *
+ * @author Steven Liatti
+ * @author Orphée Antoniadis
+ * @author Raed Abdennadher
+ * @bug No known bugs.
+ * @date December 7, 2016
+ * @version 1.0
+ */
 
 #include "workers_management.h"
 #include "workers_compute.h"
@@ -24,10 +24,9 @@ int main(int argc, char** argv) {
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
 		int seed = atoi(argv[3]);
-		int prob = (int)(atof(argv[4])*100);
+		double prob = (atof(argv[4]));
 		int freq = atoi(argv[5]);
 		int workers_nb = atoi(argv[6]);
-
 
 		int squares_nb = (width - 2) * (height - 2);
 		if (workers_nb > squares_nb) {
