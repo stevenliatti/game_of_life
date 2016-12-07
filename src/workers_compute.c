@@ -36,20 +36,15 @@ void* work(void* arg) {
 			}
 		}
 
-		// mutex to protect the workers counter
 		pthread_mutex_lock(&(worker->sync->compute_nb_mutex));
 		worker->sync->compute_nb++;
 		pthread_mutex_unlock(&(worker->sync->compute_nb_mutex));
 
 		if (worker->sync->compute_nb == worker->workers_nb) {
 			worker->sync->compute_nb = 0;
-			// if the current thread is the last one, it will allow display thread
-			// to be executed by sem_workers
 			sem_post(&(worker->sync->sem_display));
 		}
-
-		// threads will be blocked here and wait for display thread
-		// to be executed to resume their routines
+		
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
 		update_board(worker);
 	}
