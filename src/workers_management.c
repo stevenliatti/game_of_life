@@ -160,14 +160,14 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 	assert(workers != NULL);
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
-	// calculation of the number of squares that each worker will work on
+
 	int squares_nb = (width - 2) * (height - 2);
 	int assigned_squares_nb = squares_nb / workers_nb;;
 	if (squares_nb % workers_nb != 0){
 		assigned_squares_nb++;
 	}
 
-	for(int i = 0; i < workers_nb; i++) {
+	for (int i = 0; i < workers_nb; i++) {
 		workers[i].board = board;
 		workers[i].id = i;
 		workers[i].workers_nb = workers_nb;

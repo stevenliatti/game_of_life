@@ -29,7 +29,6 @@
  */
 int main(int argc, char** argv) {
 	if (argc == 7) {
-
 		int width = atoi(argv[1]);
 		int height = atoi(argv[2]);
 		int seed = atoi(argv[3]);
