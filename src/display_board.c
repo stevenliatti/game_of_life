@@ -2,7 +2,7 @@
  * @file display_board.c
  * @brief display context
  *
- * This file contains functions for the thread that display the board
+ * This file contains functions for the thread that display the board.
  *
  * @author Steven Liatti
  * @author Orphée Antoniadis
@@ -55,7 +55,7 @@ void adapt_frequency(struct timespec start, struct timespec finish, double uperi
  * and adapt frequency, then display the board. Finally, it will destroy the graphical context.
  *
  * @param arg worker_t struct
- * @return
+ * @return void
  */
 void* display(void* arg) {
 	worker_t* worker = (worker_t*) arg;
@@ -74,19 +74,16 @@ void* display(void* arg) {
 			render(ctxt, worker->board);
 
 			clock_gettime(CLOCK_MONOTONIC, &finish); 
-			
 			adapt_frequency(start, finish, worker->uperiod);
 			
 			gfx_present(ctxt);
 
-			if (worker->sync->escape_pressed){
+			if (worker->sync->escape_pressed)
 				worker->sync->end_game = true;
-			}
 
 			pthread_barrier_wait(&(worker->sync->workers_barrier));
 			clock_gettime(CLOCK_MONOTONIC, &start);
 		}
-
 		gfx_destroy(ctxt);
 	}
 

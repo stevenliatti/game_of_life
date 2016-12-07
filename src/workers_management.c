@@ -77,18 +77,18 @@ board_t* board_gen(int width, int height, int seed, double prob) {
 		for (int j = 0; j < height; j++) {
 			board->matrix[i][j].x = i;
 			board->matrix[i][j].y = j;
-			if (i == 0 || i == width-1 || j == 0 || j == height-1){
+			if (i == 0 || i == width - 1 || j == 0 || j == height - 1){
 				board->matrix[i][j].is_alive_past = false;
 				board->matrix[i][j].is_alive = false;
 			}
 			else {
 				float random = (float) rand() / (float) RAND_MAX;
-				if (prob != 0 && random < prob){
+				if (prob != 0 && random < prob) {
 					cnt++;
 			 		board->matrix[i][j].is_alive_past = true;
 			 		board->matrix[i][j].is_alive = true;
 			 	}
-				else{
+				else {
 					board->matrix[i][j].is_alive_past = false;
 					board->matrix[i][j].is_alive = false;
 				}
@@ -97,7 +97,7 @@ board_t* board_gen(int width, int height, int seed, double prob) {
 	}
 	for (int i = 1; i < width-1; i++) {
 		for (int j = 1; j < height-1; j++) {
-			update_neighbours(board->matrix,&(board->matrix[i][j]));
+			update_neighbours(board->matrix, &(board->matrix[i][j]));
 		}
 	}
 	return board;
