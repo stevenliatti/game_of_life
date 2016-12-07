@@ -11,17 +11,17 @@
 
 board_t* board_alloc(int width, int height) {
 	board_t* board = malloc(sizeof(board_t));
-	square_t* temp = malloc(width * height * sizeof(square_t));
+	cell_t* temp = malloc(width * height * sizeof(cell_t));
 	board->width = width;
 	board->height = height;
-	board->matrix = malloc(width * sizeof(square_t*));
+	board->matrix = malloc(width * sizeof(cell_t*));
 	for (int i = 0; i < width; i++) {
 		board->matrix[i] = temp + height * i;
 	}
 	return board;
 }
 
-void update_neighbours(square_t** matrix, int x, int y) {
+void update_neighbours(cell_t** matrix, int x, int y) {
 	matrix[x][y].nb_neighbours = 0;
 	for (int i = x - 1; i <= x + 1; i++) {
 		for (int j = y - 1; j <= y + 1; j++) {

@@ -38,31 +38,31 @@ typedef struct sync_st {
 } sync_t;
 
 /**
- * Struct that represent a square of the board
+ * Struct that represent a cell of the board
  *
  * @member x integer that contains abscissa value
  * @member y integer that contains ordinate value
- * @member is_alive boolean true if the square is alive in the current state
- * @member is_alive_past boolean true if the square is alive in the last state
+ * @member is_alive boolean true if the cell is alive in the current state
+ * @member is_alive_past boolean true if the cell is alive in the last state
  * @member nb_neighbours integer that contains the number of rhe the neighbours
  */
-typedef struct square_st {
+typedef struct cell_st {
 	int x;
 	int y;
 	bool is_alive;
 	bool is_alive_past;
 	int nb_neighbours;
-} square_t;
+} cell_t;
 
 /**
  * Struct that represent the board
  *
- * @member matrix of square
+ * @member matrix of cell
  * @member width integer that contains the matrix's width
  * @member height integer that contains the matrix's height
  */
 typedef struct board_st {
-	square_t** matrix;
+	cell_t** matrix;
 	int width;
 	int height;
 } board_t;
@@ -75,8 +75,8 @@ typedef struct board_st {
  * @member uperiod double that contains time for the display thread to wait
  * @member board a pointer to the board struct
  * @member sync a pointer to the sync struct
- * @member asigned_squares an array of pointers to squares of the board that will be treated by a worker
- * @member asigned_squares_nb integer that contains the number of the asigned_squares array
+ * @member asigned_cells an array of pointers to cells of the board that will be treated by a worker
+ * @member asigned_cells_nb integer that contains the number of the asigned_cells array
  */
 typedef struct worker_st {
 	int id;
@@ -84,13 +84,13 @@ typedef struct worker_st {
 	double uperiod;
 	board_t* board;
 	sync_t* sync;
-	square_t** assigned_squares;
-	int assigned_squares_nb;
+	cell_t** assigned_cells;
+	int assigned_cells_nb;
 } worker_t;
 
 worker_t* workers_init(int workers_nb, int width, int height, int seed, double prob, int freq);
 void workers_free(worker_t* workers);
-void update_neighbours(square_t** matrix, square_t* square);
+void update_neighbours(cell_t** matrix, cell_t* cell);
 void print_board(board_t* board);
 
 #endif

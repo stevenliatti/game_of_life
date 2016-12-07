@@ -3,7 +3,7 @@
  * @brief Workers functions
  *
  * This file contains functions for the workers. It's here where 
- * the rules of the game are applied on each squares and where the 
+ * the rules of the game are applied on each cells and where the 
  * board is updated.
  *
  * @author Steven Liatti
@@ -17,47 +17,47 @@
 #include "workers_compute.h"
 
 /**
- * This function update the state of the square in argument in function 
- * of the game of life's rules and the past state of the square itself.
+ * This function update the state of the cell in argument in function 
+ * of the game of life's rules and the past state of the cell itself.
  *
- * @param square the square considered
+ * @param cell the cell considered
  * @return void
  */
-void update_square(square_t* square) {
-	if (square->is_alive_past) {
-		if (square->nb_neighbours < 2 || square->nb_neighbours > 3) {
-			square->is_alive = false;
+void update_cell(cell_t* cell) {
+	if (cell->is_alive_past) {
+		if (cell->nb_neighbours < 2 || cell->nb_neighbours > 3) {
+			cell->is_alive = false;
 		}
-		else if (square->nb_neighbours == 2 || square->nb_neighbours == 3) {
-			square->is_alive = true;
+		else if (cell->nb_neighbours == 2 || cell->nb_neighbours == 3) {
+			cell->is_alive = true;
 		}
 	}
 	else {
-		if (square->nb_neighbours == 3) {
-			square->is_alive = true;
+		if (cell->nb_neighbours == 3) {
+			cell->is_alive = true;
 		}
 	}
 }
 
 /**
- * This function update the squares that are assigned to the worker. Foreach square, 
+ * This function update the cells that are assigned to the worker. Foreach cell, 
  * the past state and the neighbours are updated.
  *
  * @param worker the worker considered
  * @return void
  */
 void update_board(worker_t* worker) {
-	for (int i = 0; i < worker->assigned_squares_nb; i++) {
-		if (worker->assigned_squares[i] != NULL) {
-			update_neighbours(worker->board->matrix, worker->assigned_squares[i]);
-			worker->assigned_squares[i]->is_alive_past = worker->assigned_squares[i]->is_alive;
+	for (int i = 0; i < worker->assigned_cells_nb; i++) {
+		if (worker->assigned_cells[i] != NULL) {
+			update_neighbours(worker->board->matrix, worker->assigned_cells[i]);
+			worker->assigned_cells[i]->is_alive_past = worker->assigned_cells[i]->is_alive;
 		}
 	}
 }
 
 /**
  * It's the main function for the workers : while the escape button is not
- * pressed, the workers will calculate the next state of their squares. With 
+ * pressed, the workers will calculate the next state of their cells. With 
  * differents synchronization primitives, there is the guarantee that the display
  * will wait on workers before executing.
  *
@@ -69,9 +69,9 @@ void* work(void* arg) {
 
 	while (!worker->sync->end_game) {
 		pthread_barrier_wait(&(worker->sync->workers_barrier));
-		for (int i = 0; i < worker->assigned_squares_nb; i++) {
-			if (worker->assigned_squares[i] != NULL) {
-				update_square(worker->assigned_squares[i]);
+		for (int i = 0; i < worker->assigned_cells_nb; i++) {
+			if (worker->assigned_cells[i] != NULL) {
+				update_cell(worker->assigned_cells[i]);
 			}
 		}
 

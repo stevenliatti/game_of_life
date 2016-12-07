@@ -41,11 +41,11 @@ int main(int argc, char** argv) {
 			return EXIT_FAILURE;
 		}
 
-		int squares_nb = (width - 2) * (height - 2);
-		if (workers_nb > squares_nb) {
-			printf("The maximum number of threads that can be used for the resolution %dx%d is %d.\n", width, height, squares_nb);
-			printf("So that, the game will run with only %d threads.\n", squares_nb);
-			workers_nb = squares_nb;
+		int cells_nb = (width - 2) * (height - 2);
+		if (workers_nb > cells_nb) {
+			printf("The maximum number of threads that can be used for the resolution %dx%d is %d.\n", width, height, cells_nb);
+			printf("So that, the game will run with only %d threads.\n", cells_nb);
+			workers_nb = cells_nb;
 		}
 
 		worker_t* workers = workers_init(workers_nb, width, height, seed, prob, freq);

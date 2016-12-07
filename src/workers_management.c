@@ -16,7 +16,7 @@
 #include "workers_management.h"
 
 /**
- * This function alloc the memory for the board of squares.
+ * This function alloc the memory for the board of cells.
  *
  * @param width the width of the board in pixels
  * @param height the height of the board in pixels
@@ -25,11 +25,11 @@
 board_t* board_alloc(int width, int height) {
 	board_t* board = malloc(sizeof(board_t));
 	assert(board != NULL);
-	square_t* temp = malloc(sizeof(square_t)*width*height);
+	cell_t* temp = malloc(sizeof(cell_t)*width*height);
 	assert(temp != NULL);
 	board->width = width;
 	board->height = height;
-	board->matrix = malloc(sizeof(square_t*)*width);
+	board->matrix = malloc(sizeof(cell_t*)*width);
 	assert(board->matrix != NULL);
 	for (int i = 0; i < width; i++) {
 		board->matrix[i] = temp + height * i;
@@ -38,29 +38,29 @@ board_t* board_alloc(int width, int height) {
 }
 
 /**
- * This function update the neighbours number of the square in argument.
- * Each square has 8 neighbours to update.
+ * This function update the neighbours number of the cell in argument.
+ * Each cell has 8 neighbours to update.
  *
- * @param matrix the matrix of squares
- * @param square the square considered
+ * @param matrix the matrix of cells
+ * @param cell the cell considered
  * @return void
  */
-void update_neighbours(square_t** matrix, square_t* square) {
-	square->nb_neighbours = 0;
-	for (int i = square->x - 1; i <= square->x + 1; i++) {
-		for (int j = square->y - 1; j <= square->y + 1; j++) {
+void update_neighbours(cell_t** matrix, cell_t* cell) {
+	cell->nb_neighbours = 0;
+	for (int i = cell->x - 1; i <= cell->x + 1; i++) {
+		for (int j = cell->y - 1; j <= cell->y + 1; j++) {
 			if (matrix[i][j].is_alive) {
-				square->nb_neighbours++;
+				cell->nb_neighbours++;
 			}
 		}
 	}
-	if (square->is_alive) {
-		square->nb_neighbours--;
+	if (cell->is_alive) {
+		cell->nb_neighbours--;
 	}
 }
 
 /**
- * This function generate the game board. It sets the state of each square of
+ * This function generate the game board. It sets the state of each cell of
  * the board and then the number of alive cells near each cell.
  *
  * @param width the width of the board in pixels
@@ -104,21 +104,21 @@ board_t* board_gen(int width, int height, int seed, double prob) {
 }
 
 /**
- * This function sets the squares that each worker will work on.
+ * This function sets the cells that each worker will work on.
  *
  * @param workers array of worker_t
  * @return void
  */
-void assigned_squares_gen(worker_t* workers) {
+void assigned_cells_gen(worker_t* workers) {
 	int worker_index = 0;
-	int assigned_square_index = 0;
+	int assigned_cell_index = 0;
 	for (int i = 1; i < workers->board->width - 1; i++) {
 		for (int j = 1; j < workers->board->height - 1; j++) {
-			workers[worker_index % workers->workers_nb].assigned_squares[assigned_square_index]
+			workers[worker_index % workers->workers_nb].assigned_cells[assigned_cell_index]
 				= &(workers->board->matrix[i][j]);
 			worker_index++;
 			if (worker_index % workers->workers_nb == 0) {
-				assigned_square_index++;
+				assigned_cell_index++;
 			}
 		}
 	}
@@ -161,10 +161,10 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 	board_t* board = board_gen(width, height, seed, prob);
 	sync_t* sync = sync_init(workers_nb);
 
-	int squares_nb = (width - 2) * (height - 2);
-	int assigned_squares_nb = squares_nb / workers_nb;;
-	if (squares_nb % workers_nb != 0){
-		assigned_squares_nb++;
+	int cells_nb = (width - 2) * (height - 2);
+	int assigned_cells_nb = cells_nb / workers_nb;;
+	if (cells_nb % workers_nb != 0){
+		assigned_cells_nb++;
 	}
 
 	for (int i = 0; i < workers_nb; i++) {
@@ -173,11 +173,11 @@ worker_t* workers_init(int workers_nb, int width, int height, int seed, double p
 		workers[i].workers_nb = workers_nb;
 		workers[i].sync = sync;
 		workers[i].uperiod = (1.0 / freq) * 1e6;
-		workers[i].assigned_squares = malloc(sizeof(square_t*) * assigned_squares_nb);
-		assert(workers[i].assigned_squares != NULL);
-		workers[i].assigned_squares_nb = assigned_squares_nb;
+		workers[i].assigned_cells = malloc(sizeof(cell_t*) * assigned_cells_nb);
+		assert(workers[i].assigned_cells != NULL);
+		workers[i].assigned_cells_nb = assigned_cells_nb;
 	}
-	assigned_squares_gen(workers);
+	assigned_cells_gen(workers);
 	return workers;
 }
 
@@ -197,6 +197,6 @@ void workers_free(worker_t* workers) {
 	pthread_mutex_destroy(&(workers->sync->compute_nb_mutex));
 	free(workers->sync);
 	for (int i = 0; i < workers->workers_nb; i++)
-		free(workers[i].assigned_squares);
+		free(workers[i].assigned_cells);
 	free(workers);
 }

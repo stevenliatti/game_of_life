@@ -9,14 +9,14 @@ typedef struct sync_st {
 	bool escape_pressed;
 } sync_t;
 
-typedef struct square_st {
+typedef struct cell_st {
 	bool is_alive;
 	bool is_alive_past;
 	int nb_neighbours;
-} square_t;
+} cell_t;
 
 typedef struct board_st {
-	square_t** matrix;
+	cell_t** matrix;
 	int width;
 	int height;
 } board_t;
