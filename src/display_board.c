@@ -66,8 +66,9 @@ void* display(void* arg) {
 		fprintf(stderr, "Graphic mode initialization failed!\n");
 	} else {
 		sem_post(&(worker->sync->sem_escape));
-		clock_gettime(CLOCK_MONOTONIC, &start);
 		while (!worker->sync->end_game) {
+			clock_gettime(CLOCK_MONOTONIC, &start);
+
 			pthread_barrier_wait(&(worker->sync->workers_barrier));
 			sem_wait(&(worker->sync->sem_display));
 
@@ -82,7 +83,6 @@ void* display(void* arg) {
 				worker->sync->end_game = true;
 
 			pthread_barrier_wait(&(worker->sync->workers_barrier));
-			clock_gettime(CLOCK_MONOTONIC, &start);
 		}
 		gfx_destroy(ctxt);
 	}
