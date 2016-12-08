@@ -18,14 +18,14 @@
  *
  * @member sem_escape semaphore that wait for the graphical context to be built in "work" thread for the first time
  *			and notify "keypress_thread" that the graphical context is built and initialized
- * @member workers_barrier barrier to make sure that all the workers will start after the start of the timer and. Also, 
+ * @member workers_barrier barrier to make sure that all the workers will start after the start of the timer and. Also,
  *			threads will be blocked by this barrier and wait for display thread to be executed to resume their routines
  * @member sem_display semaphore that wait for the last worker thread to finish his treatment. If the current thread
  * 			is the last one it will allow display thread to be executed
  * @member compute_nb_mutex mutex to protect the workers counter
  * @member escape_pressed boolean true if the escape key is pressed
  * @member end_game boolean true if escape key is pressed and all workers and display thread finish their routines
- * @member compute_nb integer that contains the number of rhe workers that finish their routines
+ * @member compute_nb integer that contains the number of the workers that finish their routines
  */
 typedef struct sync_st {
 	sem_t sem_escape;
@@ -91,6 +91,5 @@ typedef struct worker_st {
 worker_t* workers_init(int workers_nb, int width, int height, int seed, double prob, int freq);
 void workers_free(worker_t* workers);
 void update_neighbours(cell_t** matrix, cell_t* cell);
-void print_board(board_t* board);
 
 #endif
