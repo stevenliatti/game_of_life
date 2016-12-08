@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 		int freq = atoi(argv[5]);
 		int workers_nb = atoi(argv[6]);
 
-		if (width < 3 || height < 3 || seed < 0 || prob <= 0 || prob >= 1 || freq <= 0 || workers_nb <= 0) {
+		if (width < 3 || height < 3 || seed < 0 || prob < 0 || prob > 1 || freq <= 0 || workers_nb <= 0) {
 			fprintf(stderr, "Bad argument value\n");
 			return EXIT_FAILURE;
 		}
